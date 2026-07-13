@@ -16,8 +16,25 @@
       {
         "command": "fluxerbothelper.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "fluxerbothelper.setupCog",
+        "title": "Setup Cog"
+      },
+      {
+        "command": "fluxerbothelper.createCog",
+        "title": "Create Cog"
       }
-    ]
+    ],
+    "menus": {
+      "file/newFile": [
+        {
+          "command": "fluxerbothelper.createCog",
+          "group": "file",
+          "when": "!virtualWorkspace"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
