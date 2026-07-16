@@ -33,11 +33,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const completionItem = new vscode.CompletionItem('Add Fluxer Bot Command', vscode.CompletionItemKind.Snippet);
 			if (linePrefix.endsWith('@bot.command()')) {
-				completionItem.insertText = new vscode.SnippetString(`\nasync def \${1:command_name}(self, ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
+				completionItem.insertText = new vscode.SnippetString(`\nasync def \${1:command_name}(ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
 			} else if (linePrefix.endsWith('@bot.command')) {
-				completionItem.insertText = new vscode.SnippetString(`command()\nasync def \${1:command_name}(self, ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
+				completionItem.insertText = new vscode.SnippetString(`command()\nasync def \${1:command_name}(ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
 			} else if (linePrefix.endsWith('@bot.command(')) {
-				completionItem.insertText = new vscode.SnippetString(`)\nasync def \${1:command_name}(self, ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
+				completionItem.insertText = new vscode.SnippetString(`)\nasync def \${1:command_name}(ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
 				// if the next symbol is a ) remove it so that it doesn't add an extra ) at the end of the command
 				const nextChar = document.getText(new vscode.Range(position, position.translate(0, 1)));
 				if (nextChar === ')') {
@@ -46,13 +46,57 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.workspace.applyEdit(edit);
 				}
 			} else {
-				completionItem.insertText = new vscode.SnippetString(`@bot.command()\nasync def \${1:command_name}(self, ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
+				completionItem.insertText = new vscode.SnippetString(`@bot.command()\nasync def \${1:command_name}(ctx: fluxer.models.message.Message):\n    # Your code here\n    pass`);
 			}
 			completionItem.documentation = new vscode.MarkdownString('Adds a new command for the Fluxer bot.');
 
 			return [completionItem];
 		}
 	}, '(', '.', ')', 'd'); // Trigger completion when '(' or '.' is typed 
+
+	vscode.languages.registerCompletionItemProvider('python', {
+		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+			const linePrefix = document.lineAt(position).text.substring(0, position.character);
+			if (!linePrefix.endsWith('@bot.event') && !linePrefix.endsWith('@bot.even')) {
+				return undefined;
+			}
+			const completionItem = new vscode.CompletionItem('Add Fluxer Bot Event', vscode.CompletionItemKind.Snippet);
+			if (linePrefix.endsWith('@bot.event')) {
+				completionItem.insertText = new vscode.SnippetString(`\nasync def \${1:event_name}(\${2:}):\n    # Your code here\n    pass`);
+			} else if (linePrefix.endsWith('@bot.even')) {
+				completionItem.insertText = new vscode.SnippetString(`t\nasync def \${1:event_name}(\${2:}):\n    # Your code here\n    pass`);
+			}
+			completionItem.documentation = new vscode.MarkdownString('Adds a new event for the Fluxer bot.');
+
+			return [completionItem];
+		}
+	}, '(', '.', ')', 't', 'n');
+
+	vscode.languages.registerCompletionItemProvider('python',{
+		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+			const linePrefix = document.lineAt(position).text.substring(0, position.character);
+			if (!linePrefix.endsWith('@Cog.listener()') && !linePrefix.endsWith('@Cog.listener(') && !linePrefix.endsWith('@Cog.listener')) {
+				return undefined;
+			}
+			const completionItem = new vscode.CompletionItem('Add Fluxer Cog Listener', vscode.CompletionItemKind.Snippet);
+			if (linePrefix.endsWith('@Cog.listener()')) {
+				completionItem.insertText = new vscode.SnippetString(`\nasync def \${1:listener_name}(self, \${2:}):\n    # Your code here\n    pass`);
+			} else if (linePrefix.endsWith('@Cog.listener(')) {
+				completionItem.insertText = new vscode.SnippetString(`)\nasync def \${1:listener_name}(self, \${2:}):\n    # Your code here\n    pass`);
+				const nextChar = document.getText(new vscode.Range(position, position.translate(0, 1)));
+				if (nextChar === ')') {
+					const edit = new vscode.WorkspaceEdit();
+					edit.delete(document.uri, new vscode.Range(position, position.translate(0, 1)));
+					vscode.workspace.applyEdit(edit);
+				}
+			} else if (linePrefix.endsWith('@Cog.listener')) {
+				completionItem.insertText = new vscode.SnippetString(`())\nasync def \${1:listener_name}(self, \${2:}):\n    # Your code here\n    pass`);
+			}
+			completionItem.documentation = new vscode.MarkdownString('Adds a new event listener for the Fluxer cog.');
+
+			return [completionItem];
+		}
+	}, '(', '.', ')', 'r');
 
 	// Add the same for Cog.command() so when the user types @Cog.command() it will add the same
 	vscode.languages.registerCompletionItemProvider('python', {
