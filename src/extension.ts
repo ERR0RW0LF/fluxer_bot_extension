@@ -90,7 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.workspace.applyEdit(edit);
 				}
 			} else if (linePrefix.endsWith('@Cog.listener')) {
-				completionItem.insertText = new vscode.SnippetString(`())\nasync def \${1:listener_name}(self, \${2:}):\n    # Your code here\n    pass`);
+				completionItem.insertText = new vscode.SnippetString(`listener())\nasync def \${1:listener_name}(self, \${2:}):\n    # Your code here\n    pass`);
 			}
 			completionItem.documentation = new vscode.MarkdownString('Adds a new event listener for the Fluxer cog.');
 
@@ -130,8 +130,101 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, '(', '.', ')', 'd'); // Trigger completion when '(' or '.' is typed 
 
+	const disposableCogCommand = vscode.commands.registerCommand('fluxerbothelper.addCogCommand', async () => {
+		const commandName = await vscode.window.showInputBox({
+			prompt: 'Enter the name of the new Command',
+			placeHolder: 'new_command'
+		});
+		if (!commandName) {
+			return;
+		}
+		const commandTemplate = `@Cog.command()
+async def ${commandName}(self, ctx: fluxer.models.message.Message):
+	# Your code here:
+	pass
+`;
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const position = editor.selection.active;
+			editor.edit(editBuilder => {
+				editBuilder.insert(position, commandTemplate);
+			});
+		} else {
+			const newFile = await vscode.workspace.openTextDocument({ content: commandTemplate, language: 'python' });
+			await vscode.window.showTextDocument(newFile);
+		}
+	});
 
+	const disposableBotCommand = vscode.commands.registerCommand('fluxerbothelper.addBotCommand', async () => {
+		const commandName = await vscode.window.showInputBox({
+			prompt: 'Enter the name of the new Command',
+			placeHolder: 'new_command'
+		});
+		if (!commandName) {
+			return
+		}
+		const commandTemplate = `@bot.command()
+async def ${commandName}(ctx: fluxer.models.message.Message):
+	# Your code here:
+	pass
+`;
+		// Add at current position in file
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const position = editor.selection.active;
+			editor.edit(editBuilder => {
+				editBuilder.insert(position, commandTemplate);
+			});
+		} else {
+			const newFile = await vscode.workspace.openTextDocument({ content: commandTemplate, language: 'python' });
+			await vscode.window.showTextDocument(newFile);
+		}
+	});
 	
+	const disposableCogListener = vscode.commands.registerCommand('fluxerbothelper.addCogListener', async () => {
+		const listenerName = await vscode.window.showInputBox({
+			prompt: 'Enter the name of the Listener',
+			placeHolder: 'on_raw_reaction_add'
+		});
+		const listenerTemplate = `@Cog.listener()
+async def ${listenerName}(self, raw):
+	# Your code here:
+	pass
+`;
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const position = editor.selection.active;
+			editor.edit(editBuilder => {
+				editBuilder.insert(position, listenerTemplate);
+			});
+		} else {
+			const newFile = await vscode.workspace.openTextDocument({ content: listenerTemplate, language: 'python' });
+			await vscode.window.showTextDocument(newFile);
+		}
+	});
+
+	const disposableBotEvent = vscode.commands.registerCommand('fluxerbothelper.addBotEvent', async () => {
+		const eventName = await vscode.window.showInputBox({
+			prompt: 'Enter the name of the Event',
+			placeHolder: 'on_raw_reaction_add'
+		});
+		const eventTemplate = `@bot.event
+async def ${eventName}(raw):
+	# Your code here:
+	pass
+`;
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const position = editor.selection.active;
+			editor.edit(editBuilder => {
+				editBuilder.insert(position, eventTemplate);
+			});
+		} else {
+			const newFile = await vscode.workspace.openTextDocument({ content: eventTemplate, language: 'python' });
+			await vscode.window.showTextDocument(newFile);
+		}
+	});
+
 	// Add new option to New File for creating a python file with everything for a cog already set up. 
 	/* # py
 import fluxer
@@ -243,6 +336,10 @@ async def teardown(bot):
 	context.subscriptions.push(disposableSetupCog);
 
 	context.subscriptions.push(disposableHelloWorld);
+
+	context.subscriptions.push(disposableBotCommand);
+
+	context.subscriptions.push(disposableCogCommand);
 }
 
 // This method is called when your extension is deactivated
