@@ -340,6 +340,10 @@ async def teardown(bot):
 	context.subscriptions.push(disposableBotCommand);
 
 	context.subscriptions.push(disposableCogCommand);
+
+	context.subscriptions.push(disposableBotEvent);
+
+	context.subscriptions.push(disposableCogListener);
 }
 
 // This method is called when your extension is deactivated
