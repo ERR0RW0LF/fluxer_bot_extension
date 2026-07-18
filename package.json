@@ -1,29 +1,52 @@
 {
   "name": "fluxerbothelper",
-  "displayName": "FluxerBotHelper",
+  "displayName": "Fluxer.py Bot Helper",
   "description": "",
   "version": "0.0.1",
+  "publisher": "ERR0RW0LF",
+  "author": {
+    "name": "ERR0RW0LF"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ERR0RW0LF/fluxer_bot_extension"
+  },
   "engines": {
     "vscode": "^1.125.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "icon.png",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "fluxerbothelper.helloWorld",
+        "category": "Fluxer",
         "title": "Hello World"
       },
       {
         "command": "fluxerbothelper.setupCog",
+        "category": "Fluxer",
         "title": "Setup Cog"
       },
       {
         "command": "fluxerbothelper.createCog",
+        "category": "Fluxer",
         "title": "Create Cog"
+      },
+      {
+        "command": "fluxerbothelper.addCogCommand",
+        "category": "Fluxer",
+        "title": "Create Command in Cog"
+      },
+      {
+        "command": "fluxerbothelper.addBotCommand",
+        "category": "Fluxer",
+        "title": "Create Command in Bot"
       }
     ],
     "menus": {
